@@ -33,37 +33,47 @@ form.addEventListener('submit', event => {
 
 });
 
-const list =document.querySelector('.js-todo-list')
+const list = document.querySelector('.js-todo-list')
 
-list.addEventListener('click', event =>{
-if(event.target.classList.contains('js-tick')){
-    const itemKey = event.target.parentElement.dataset.key;
-    toggleDone(itemKey)
+list.addEventListener('click', event => {
+    if (event.target.classList.contains('js-tick')) {
+        const itemKey = event.target.parentElement.dataset.key;
+        toggleDone(itemKey)
 
-}
+
+    }
 
 });
 
 
-const toggleDone = (key)=>{
- 
+const toggleDone = (key) => {
+    // findIndex é método de array que returna a posição do elemento
+    // em um array
+    const index = todoItems.findIndex(item => item.id === Number(key));
+    // Localiza o item no array todoItems e configura o atributo checked
+    // para o oposto. Isto significado, `true` deve se tornar `false` and vice
+    // versa.
+    todoItems[index].checked = !todoItems[index].checked;
+    renderTodo(todoItems[index]);
 }
 
 
-const renderTodo = (todo)=>{
+const renderTodo = (todo) => {
 
     const list = document.querySelector('.js-todo-list');
+
+    const item = document.querySelector(`[data-key='${todo.id}']`);
 
     const isChecked = todo.checked ? 'done' : '';
 
     const node = document.createElement('li');
 
-    node.setAttribute('class',`todo-item ${isChecked}`)
+    node.setAttribute('class', `todo-item ${isChecked}`)
 
-    node.setAttribute('data-key',todo.id);
+    node.setAttribute('data-key', todo.id);
 
-    node.innerHTML = 
-    `
+    node.innerHTML =
+        `
     <input id="${todo.id}" type="checkbox"/>
     <label for="${todo.id}" class="tick js-tick"></label>
     <span>${todo.text}</span>
@@ -73,6 +83,10 @@ const renderTodo = (todo)=>{
     
   `;
 
-  list.appendChild(node)
+   if (item){
+    list.replaceChild(node , item);
+   }else {
+    list.appendChild(node)
+   }
 }
 
