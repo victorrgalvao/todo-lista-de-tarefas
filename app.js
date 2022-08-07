@@ -38,12 +38,16 @@ const list = document.querySelector('.js-todo-list')
 list.addEventListener('click', event => {
     if (event.target.classList.contains('js-tick')) {
         const itemKey = event.target.parentElement.dataset.key;
-        toggleDone(itemKey)
+        toggleDone(itemKey);
 
 
     }
-
+    if (event.target.classList.contains('js-delete-todo')) {
+        const itemKey = event.target.parentElement.dataset.key;
+        deleteTodo(itemKey);
+    }
 });
+
 
 
 const toggleDone = (key) => {
@@ -57,12 +61,30 @@ const toggleDone = (key) => {
     renderTodo(todoItems[index]);
 }
 
+const deleteTodo = (key) => {
+
+    const index = todoItems.findIndex(item => item.id === Number(key));
+
+    const todo = {
+        deleted: true,
+        ...todoItems[index]
+    };
+    todoItems = todoItems.filter(item => item.id !== Number(key));
+    renderTodo(todo);
+
+}
 
 const renderTodo = (todo) => {
-
+    localStorage.setItem('todoItemsRef', JSON.stringify(todoItems));
     const list = document.querySelector('.js-todo-list');
 
     const item = document.querySelector(`[data-key='${todo.id}']`);
+
+    if (todo.deleted) {
+        item.remove(); 
+        return
+     }
+
 
     const isChecked = todo.checked ? 'done' : '';
 
@@ -83,10 +105,24 @@ const renderTodo = (todo) => {
     
   `;
 
-   if (item){
-    list.replaceChild(node , item);
-   }else {
-    list.appendChild(node)
-   }
+    if (item) {
+        list.replaceChild(node, item);
+    } else {
+        list.appendChild(node)
+    }
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const ref = localStorage.getItem('todoItemsRef');
+    if (ref) {
+      todoItems = JSON.parse(ref);
+      todoItems.forEach(t => {
+        renderTodo(t);
+      });
+    }
+  });
+  
+
+
 
